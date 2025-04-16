@@ -1,0 +1,14 @@
+<h2>Delete Expense</h2>
+<p>Kya aap pakka is expense ko delete karna chahte ho?</p>
+
+<p>
+    ₹{{ expense.amount }} -
+    {{ expense.category.category_name if expense.category else "No Category" }} |
+    {{ expense.created_at|date:"d M Y H:i" }}
+</p>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Haan, delete kar do</button>
+    <a href="{% url 'my_expenses' %}">Nahi, wapas le jao</a>
+</form>

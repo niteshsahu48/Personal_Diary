@@ -1,0 +1,14 @@
+{% extends 'diary_app/base.html' %}
+{% block title %}Add/Edit Notebook{% endblock %}
+{% block content %}
+<h3>{% if notebook %}Edit{% else %}Add{% endif %} Notebook</h3>
+<form method="post">{% csrf_token %}
+    <div class="mb-3">
+        <input type="text" name="title" class="form-control" value="{{ notebook.title|default:'' }}" placeholder="Title" required>
+    </div>
+    <div class="mb-3">
+        <textarea name="content" class="form-control" rows="5" placeholder="Content">{{ notebook.content|default:'' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Save</button>
+</form>
+{% endblock %}

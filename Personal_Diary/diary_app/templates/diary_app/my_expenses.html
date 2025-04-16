@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mere Expenses</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-KyZXEJv3qD3+fGXtTtmo0tWfDkmuMyfRxRftYygQdmkmMDfdu3niR3htpTPgkpX6" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f7f9fc;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .container {
+            background-color:rgb(91, 129, 201);
+            border-radius: 12px;
+            box-shadow: 0 20px 30px rgba(243, 121, 121, 0.1);
+            padding: 40px;
+            max-width: 900px;
+            margin-top: 50px;
+        }
+
+        h1 {
+            font-family: 'Arial', sans-serif;
+            font-weight: bold;
+            color:rgb(0, 0, 0);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-group select {
+            border-radius: 10px;
+            font-size: 1rem;
+            padding: 12px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #555;
+        }
+
+        .btn {
+            border-radius: 30px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color:rgb(0, 0, 0);
+            border: none;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color:rgb(23, 24, 23);
+            opacity: 0.9;
+        }
+
+        .btn-warning {
+            background-color:rgb(12, 12, 11);
+            border: none;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #f57c00;
+            opacity: 0.9;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            border: none;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #d32f2f;
+            opacity: 0.9;
+        }
+
+        .list-group-item {
+            background-color: #ffffff;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+            padding: 20px;
+            border-radius: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .list-group-item:hover {
+            background-color: #e9f7df;
+        }
+
+        .expense-actions a {
+            font-size: 0.875rem;
+            margin-right: 10px;
+        }
+
+        .card {
+            border-radius: 12px;
+            border: none;
+            background-color: #f9f9f9;
+            margin-bottom: 20px;
+            padding: 20px;
+        }
+
+        .card-header {
+            background-color: #4CAF50;
+            color: white;
+            font-weight: bold;
+            border-radius: 12px 12px 0 0;
+            font-size: 1.25rem;
+        }
+
+        .card-body {
+            background-color: #f1f1f1;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .empty-message {
+            color: #888;
+            font-size: 1.1rem;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .list-group {
+            padding: 0;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .expense-details {
+            flex-grow: 1;
+        }
+
+        .expense-details small {
+            color: #777;
+            font-size: 0.875rem;
+        }
+
+        .expense-actions {
+            display: flex;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">Mere Expenses</h1>
+
+        <!-- Filter by category -->
+        <form method="get" class="mb-4">
+            <div class="form-group">
+                <label for="category">Filter by Category</label>
+                <select name="category" id="category" class="form-control" onchange="this.form.submit()">
+                    <option value="">-- Saare Categories --</option>
+                    {% for category in categories %}
+                        <option value="{{ category.id }}" {% if selected_category == category.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category.category_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </form>
+
+        <!-- Add Expense button -->
+        <div class="text-center mb-4">
+            <a href="{% url 'add_expense' %}" class="btn btn-primary px-4 py-2">+ Add Expense</a>
+        </div>
+
+        {% if expenses %}
+            <div class="card">
+                <div class="card-header">Expense List</div>
+                <div class="card-body">
+                    <ul class="list-group">
+                        {% for expense in expenses %}
+                            <li class="list-group-item">
+                                <div class="expense-item">
+                                    <div class="expense-details">
+                                        <strong>₹{{ expense.amount }}</strong>
+                                        <div class="text-muted">
+                                            {% if expense.category %}
+                                                {{ expense.category.category_name }}
+                                            {% else %}
+                                                No Category
+                                            {% endif %}
+                                        </div>
+                                        <small>{{ expense.created_at|date:"d M Y H:i" }}</small>
+                                    </div>
+
+                                    <div class="expense-actions">
+                                        <a href="{% url 'edit_expense' expense.id %}" class="btn btn-warning btn-sm mx-1">Edit</a>
+                                        <a href="{% url 'delete_expense' expense.id %}" class="btn btn-danger btn-sm mx-1">Delete</a>
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% else %}
+            <p class="empty-message">Koi expense nahi mila.</p>
+        {% endif %}
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-KyZXEJv3qD3+fGXtTtmo0tWfDkmuMyfRxRftYygQdmkmMDfdu3niR3htpTPgkpX6" crossorigin="anonymous"></script>
+</body>
+
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Diary Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+        background: linear-gradient(to right, #e0eafc, #cfdef3);
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .card {
+        border-radius: 20px;
+        transition: transform 0.2s ease-in-out;
+    }
+    .card:hover {
+        transform: scale(1.03);
+    }
+    .card-title {
+        font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="container py-5">
+    <h1 class="text-center mb-5">📓 Welcome to Your Personal Diary</h1>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+
+      <div class="col">
+        <div class="card shadow-sm p-3 h-100">
+          <div class="card-body">
+            <h5 class="card-title">📝 Add Notebook</h5>
+            <p class="card-text">Create a new notebook to jot down thoughts, ideas or plans.</p>
+            <a href="{% url 'add_notebook' %}" class="btn btn-primary">Add Notebook</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card shadow-sm p-3 h-100">
+          <div class="card-body">
+            <h5 class="card-title">📂 Categories</h5>
+            <p class="card-text">Manage your expense categories here.</p>
+            <a href="{% url 'add_category' %}" class="btn btn-success">Add Category</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card shadow-sm p-3 h-100">
+          <div class="card-body">
+            <h5 class="card-title">💸 Add Expense</h5>
+            <p class="card-text">Record a new expense and track your spending.</p>
+            <a href="{% url 'add_expense' %}" class="btn btn-warning">Add Expense</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card shadow-sm p-3 h-100">
+          <div class="card-body">
+            <h5 class="card-title">📖 My Notebooks</h5>
+            <p class="card-text">View and edit all your notebooks.</p>
+            <a href="{% url 'index' %}" class="btn btn-info">View Notebooks</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card shadow-sm p-3 h-100">
+          <div class="card-body">
+            <h5 class="card-title">📊 My Expenses</h5>
+            <p class="card-text">Check your expenses filtered by category.</p>
+            <a href="{% url 'my_expenses' %}" class="btn btn-dark">View Expenses</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="col">
+        <div class="card shadow-sm p-3 h-100">
+          <div class="card-body">
+            <h5 class="card-title">🚪 Logout</h5>
+            <p class="card-text">End your current session safely.</p>
+            <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>

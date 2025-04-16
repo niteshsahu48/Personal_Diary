@@ -1,0 +1,13 @@
+{% extends 'diary_app/base.html' %}
+{% block title %}Expenses in {{ category.category_name }}{% endblock %}
+{% block content %}
+<h3>Expenses in "{{ category.category_name }}"</h3>
+<ul class="list-group">
+    {% for expense in expenses %}
+        <li class="list-group-item">{{ expense.amount }} - {{ expense.add_note }}</li>
+    {% empty %}
+        <li class="list-group-item">No expenses in this category.</li>
+    {% endfor %}
+</ul>
+<a class="btn btn-sm btn-secondary mt-3" href="{% url 'index' %}">Back</a>
+{% endblock %}

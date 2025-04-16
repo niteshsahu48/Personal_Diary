@@ -1,0 +1,11 @@
+{% extends 'diary_app/base.html' %}
+{% block title %}Edit Category{% endblock %}
+{% block content %}
+<h3>Edit Category</h3>
+<form method="post">{% csrf_token %}
+    <div class="mb-3">
+        <input type="text" name="category_name" class="form-control" value="{{ category.category_name }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+{% endblock %}
