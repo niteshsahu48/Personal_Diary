@@ -1,8 +1,0 @@
-{% extends 'diary_app/base.html' %}
-{% block title %}Notebook Detail{% endblock %}
-{% block content %}
-<h3>{{ expenses.title }}</h3>
-<p>{{ expenses.content }}</p>
-<a class="btn btn-sm btn-secondary" href="{% url 'edit_expenses' expenses.id %}">Edit</a>
-<a class="btn btn-sm btn-danger" href="{% url 'delete_expenses' expenses.id %}">Delete</a>
-{% endblock %}

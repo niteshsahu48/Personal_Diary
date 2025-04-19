@@ -1,0 +1,16 @@
+{% extends 'diary_app/base.html' %}
+{% block title %}Delete Category{% endblock %}
+{% block content %}
+<h3>Delete Category</h3>
+<p>Kya aap pakka is category ko delete karna chahte ho?</p>
+
+<div class="alert alert-warning">
+    {{ category.category_name }}
+</div>
+
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Haan, delete kar do</button>
+    <a href="{% url 'add_category' %}" class="btn btn-secondary">Nahi, wapas le jao</a>
+</form>
+{% endblock %}

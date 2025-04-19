@@ -1,11 +1,33 @@
 {% extends 'diary_app/base.html' %}
 {% block title %}Add Category{% endblock %}
+
 {% block content %}
 <h3>Add Category</h3>
-<form method="post">{% csrf_token %}
+
+<form method="post">
+    {% csrf_token %}
     <div class="mb-3">
         <input type="text" name="category_name" class="form-control" placeholder="Category Name" required>
     </div>
     <button type="submit" class="btn btn-success">Save</button>
 </form>
+
+<hr>
+
+<h5 class="mt-4">Existing Categories</h5>
+<ul class="list-group">
+    {% if categories %}
+        {% for category in categories %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{ category.category_name }}
+                <div>
+                    <a href="{% url 'edit_category' category.id %}" class="btn btn-sm btn-primary me-2">Edit</a>
+                    <a href="{% url 'delete_category' category.id %}" class="btn btn-sm btn-danger">Delete</a>
+                </div>
+            </li>
+        {% endfor %}
+    {% else %}
+        <li class="list-group-item text-muted">No categories added yet.</li>
+    {% endif %}
+</ul>
 {% endblock %}

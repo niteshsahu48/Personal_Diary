@@ -23,12 +23,14 @@ from django.contrib.auth import views as auth_views
 
 urlpatterns = [
     #path('', views.index, name='index'),
-    path('', views.index, name='index'),
+    path('index/', views.index, name='index'),
+    path('', views.about_page, name='about_page'),
 
     # Authentication
     path('login/', views.login_view, name='login_view'),
     path('logout/', views.logout_view, name='logout'),
-    path('register/', views.registration, name='register'),
+    path('register/', views.registration, name='registration'),
+    
 
     # Category
     path('category/add/', views.add_category, name='add_category'),
@@ -39,7 +41,8 @@ urlpatterns = [
     path('notebook/add/', views.add_notebook, name='add_notebook'),
     path('notebook/edit/<int:notebook_id>/', views.edit_notebook, name='edit_notebook'),
     path('notebook/delete/<int:notebook_id>/', views.delete_notebook, name='delete_notebook'),
-    path('notebook/<int:notebook_id>/', views.notebook_detail, name='notebook_detail'),
+    #path('notebook/<int:notebook_id>/', views.notebook_detail, name='notebook_detail'),
+    path('my-notebooks/',views.my_notebooks,name='my_notebooks'),
 
     # Expense
     path('expense/add/', views.add_expense, name='add_expense'),
