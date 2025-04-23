@@ -9,7 +9,7 @@ from django.contrib.auth.models import User
 
 
 # User Login Form
-class LoginForm(AuthenticationForm):
+    class LoginForm(AuthenticationForm):
     username = forms.CharField(widget=forms.TextInput(attrs={'autofocus': True}))
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
 

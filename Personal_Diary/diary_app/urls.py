@@ -21,6 +21,7 @@ from django.contrib.auth import views as auth_views
     #path('accounts/login/', auth_views.LoginView.as_view(), name='login'),
 #]
 
+
 urlpatterns = [
     #path('', views.index, name='index'),
     path('index/', views.index, name='index'),
@@ -30,6 +31,16 @@ urlpatterns = [
     path('login/', views.login_view, name='login_view'),
     path('logout/', views.logout_view, name='logout'),
     path('register/', views.registration, name='registration'),
+
+    # Profile
+    path('profile/', views.profile, name='profile'),
+    path('profile/edit/', views.edit_profile_view, name='edit_profile'),
+    path('profile/change-password/', auth_views.PasswordChangeView.as_view(
+    template_name='change_password.html',
+    success_url='/profile/'
+), name='change_password'),
+
+
     
 
     # Category
@@ -54,4 +65,6 @@ urlpatterns = [
     
 
 ]
+
+
 

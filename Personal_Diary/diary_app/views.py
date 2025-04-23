@@ -1,8 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout,get_user_model
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth import get_user_model
 from .models import Category, Notebook, Expense, RegisterUser
 from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.auth.models import AbstractUser
@@ -68,6 +67,31 @@ def index(request):
         'expenses': expenses,
     }
     return render(request, 'diary_app/index.html', context)
+
+@login_required
+def profile(request):
+    user = request.user  
+    return render(request, 'diary_app/profile.html')
+
+@login_required
+def edit_profile_view(request):
+    user = request.user
+
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        last_name = request.POST.get('last_name')
+
+        user.username = username
+        user.last_name = last_name
+        user.save()
+
+        messages.success(request, 'Profile updated successfully!')
+        return redirect('profile')
+
+    return render(request, 'diary_app/edit_profile.html', {'user': user})
+
+
+
 
 @login_required
 def add_category(request):

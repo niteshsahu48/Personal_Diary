@@ -1,0 +1,45 @@
+{% extends 'diary_app/base.html' %}
+
+{% block title %}User Profile{% endblock %}
+
+{% block content %}
+
+    
+        <h2 class="text-center mb-4">👤 Your Profile</h2>
+
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>Email:</strong></div>
+            <div class="col-md-8">{{ request.user.email }}</div>
+        </div>
+
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>Username:</strong></div>
+            <div class="col-md-8">{{ request.user.username }}</div>
+        </div>
+
+        {% if request.user.last_name %}
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>Last Name:</strong></div>
+            <div class="col-md-8">{{ request.user.last_name }}</div>
+        </div>
+        {% endif %}
+
+        <div class="row mb-3">
+            <div class="col-md-4"><strong>Date Joined:</strong></div>
+            <div class="col-md-8">{{ request.user.date_joined|date:"F d, Y H:i" }}</div>
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'edit_profile' %}" class="btn btn-info">
+                <i class="fas fa-edit"></i> Edit Profile
+            </a>
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'change_password' %}" class="btn btn-dark">
+                <i class="fas fa-lock"></i> Change Password
+            </a>
+        </div>
+
+
+{% endblock %}
