@@ -35,10 +35,8 @@ urlpatterns = [
     # Profile
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.edit_profile_view, name='edit_profile'),
-    path('profile/change-password/', auth_views.PasswordChangeView.as_view(
-    template_name='change_password.html',
-    success_url='/profile/'
-), name='change_password'),
+    path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='diary_app/change_password.html'), name='change_password'),
+
 
 
     

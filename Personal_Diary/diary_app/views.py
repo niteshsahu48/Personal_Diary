@@ -8,6 +8,8 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Sum
 from django.utils.dateparse import parse_date
+from django.urls import reverse_lazy
+
 
 
 
@@ -33,7 +35,7 @@ def registration(request):
         else:
             re_enter_password= request.POST.get('password')
 
-        return redirect('login_view') 
+        return redirect('index') 
     return render(request, 'diary_app/register.html')
 
 def login_view(request):
@@ -152,7 +154,7 @@ def edit_notebook(request, notebook_id):
 def delete_notebook(request, notebook_id):
     notebook = Notebook.objects.get(id=notebook_id, user=request.user)
     notebook.delete()
-    return redirect('index')
+    return redirect('my_notebooks')
 
 @login_required
 def add_expense(request):

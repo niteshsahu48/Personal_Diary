@@ -176,6 +176,10 @@
                                 {% endif %}
                             </div>
                             <small>{{ expense.created_at|date:"d M Y H:i" }}</small>
+
+                            {% if expense.add_note %}
+                            <div class="mt-2"><em>Note:</em> {{ expense.add_note }}</div>
+                            {% endif %}
                         </div>
                         <div class="expense-actions">
                             <a href="{% url 'edit_expense' expense.id %}" class="btn btn-warning btn-sm"><i class="fas fa-edit"></i></a>

@@ -11,18 +11,25 @@
 
     <style>
         body {
-            background-color: #f8f9fa;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 40px 0;
+            transition: background 0.5s ease;
         }
 
         .container {
-            background-color: #ffffff;
-            border-radius: 12px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
-            padding: 40px;
-            max-width: 900px;
-            margin: 50px auto;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            max-width: 1100px;
+            margin: auto;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            color: #fff;
+            position: relative;
         }
+
 
         h1 {
             font-weight: bold;
@@ -48,7 +55,7 @@
         .list-group-item {
             border-radius: 8px;
             margin-bottom: 15px;
-            border: 1px solid #dee2e6;
+            border: 1px solidrgb(135, 188, 241);
         }
 
         .notebook-actions a {
