@@ -12,9 +12,7 @@ from django.urls import reverse_lazy
 import random
 from django.core.mail import send_mail
 from django.utils import timezone
-
-
-
+from django.views.decorators.csrf import csrf_exempt
 
 
 
@@ -24,14 +22,7 @@ User = get_user_model()
 def about_page(request):
     return render(request, 'diary_app/about.html')  
 
-from django.contrib import messages
 
-from django.contrib.auth.hashers import make_password
-from django.contrib import messages
-from django.shortcuts import redirect, render
-from .models import RegisterUser  # adjust if your model import is different
-
-from django.contrib.auth import login  # 👈 import login
 
 def registration(request):
     if request.method == 'POST':
@@ -66,7 +57,7 @@ def registration(request):
 
     return render(request, 'diary_app/register.html')
 
-
+@csrf_exempt
 def login_view(request):
     if request.method == 'POST':
         username = request.POST.get('email')
@@ -203,8 +194,20 @@ def add_category(request):
     if request.method == 'POST':
         category_name = request.POST.get('category_name')
         if category_name:
-            Category.objects.create(category_name=category_name, user=request.user)
-            return redirect('add_category')  # or wherever you want to redirect
+            exists = Category.objects.filter(
+                category_name__iexact=category_name.strip(), 
+                user=request.user
+            ).exists()
+
+            if exists:
+                messages.warning(request, f"Category '{category_name}' already exists.")
+            else:
+                Category.objects.create(
+                    category_name=category_name.strip(), 
+                    user=request.user
+                )
+                messages.success(request, f"Category '{category_name}' added successfully.")
+                return redirect('add_category')
 
     categories = Category.objects.filter(user=request.user).order_by('category_name')
     return render(request, 'diary_app/add_category.html', {'categories': categories})
