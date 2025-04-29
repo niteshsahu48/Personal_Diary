@@ -9,6 +9,10 @@ from django.db import models
 from django.db.models import Sum
 from django.utils.dateparse import parse_date
 from django.urls import reverse_lazy
+import random
+from django.core.mail import send_mail
+from django.utils import timezone
+
 
 
 
@@ -20,23 +24,48 @@ User = get_user_model()
 def about_page(request):
     return render(request, 'diary_app/about.html')  
 
+from django.contrib import messages
+
+from django.contrib.auth.hashers import make_password
+from django.contrib import messages
+from django.shortcuts import redirect, render
+from .models import RegisterUser  # adjust if your model import is different
+
+from django.contrib.auth import login  # 👈 import login
+
 def registration(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         email = request.POST.get('email')
-        re_enter_password= request.POST.get('password')
+        confirm_password = request.POST.get('confirm_password')
+
+        # Username check
+        if RegisterUser.objects.filter(username=username).exists():
+            messages.error(request, "Username already exists.")
+            return redirect('registration')
+
+        # Email check
+        if RegisterUser.objects.filter(email=email).exists():
+            messages.error(request, "Email already registered.")
+            return redirect('registration')
+
+        # Password match check
+        if password != confirm_password:
+            messages.error(request, "Passwords do not match.")
+            return redirect('registration')
+
+        # Create user and login
         hashed_password = make_password(password)
-        hashed_password = make_password(re_enter_password)
-        if password==re_enter_password:
+        user = RegisterUser(username=username, password=hashed_password, email=email)
+        user.save()
 
-            user = RegisterUser(username=username, password=hashed_password, email=email)
-            user.save()
-        else:
-            re_enter_password= request.POST.get('password')
-
+        login(request, user)  
+        messages.success(request, "Registration successful. You are now logged in.")
         return redirect('index') 
+
     return render(request, 'diary_app/register.html')
+
 
 def login_view(request):
     if request.method == 'POST':
@@ -92,7 +121,81 @@ def edit_profile_view(request):
 
     return render(request, 'diary_app/edit_profile.html', {'user': user})
 
+def generate_otp():
+    return str(random.randint(100000, 999999))
 
+
+
+def send_otp_email(user,otp):
+    send_mail(
+        subject='Your OTP for Password Reset',
+        message=f'Dear {user.username},\n\n'
+            f'🛡️ Your OTP for password reset is: {otp}\n\n'
+            'Please note:⏳ This OTP is valid for only 5 minutes.\n'
+            'If you did not request a password reset, please ignore this email.\n\n'
+            'Thank you,\n'
+            'My Personal Diary Team',
+        from_email=None,
+        recipient_list=[user.email],
+        fail_silently=False,
+    )
+
+def forgot_password(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        
+        try:
+            user = RegisterUser.objects.get(email=email)
+            otp = generate_otp()
+            user.otp = otp
+            user.otp_created_at = timezone.now()
+            user.save()
+            send_otp_email(user, otp)
+            request.session['reset_email'] = email
+            messages.success(request, "OTP sent to your email!")
+            return redirect('verify_otp')
+        except RegisterUser.DoesNotExist:
+            messages.error(request, "User with this email does not exist.")
+    else:
+        messages.error(request, "Something Went worng! Please fill the corect email address.")
+
+
+    return render(request, 'diary_app/forgot_password.html')
+
+def verify_otp(request):
+    email = request.session.get('reset_email')
+    if not email:
+        return redirect('forgot_password')
+    
+    if request.method == 'POST':
+        otp = request.POST.get('otp')
+        new_password = request.POST.get('new_password')
+        confirm_password = request.POST.get('confirm_password')
+
+        try:
+            user = RegisterUser.objects.get(email=email)
+            if user.otp != otp:
+                messages.error(request, "Invalid OTP.")
+            elif (timezone.now() - user.otp_created_at).total_seconds() > 300:
+                user.otp = None
+                user.otp_created_at = None
+                user.save()
+                messages.error(request, "OTP expired. Please try again.")
+                return redirect('forgot_password')
+            elif new_password != confirm_password:
+                messages.error(request, "Passwords do not match.")
+            elif len(new_password) < 8 or not any(c.isdigit() for c in new_password) or not any(c.isupper() for c in new_password):
+                messages.error(request, "Password must be at least 8 characters, contain a number and an uppercase letter.")
+            else:
+                user.set_password(new_password)
+                user.otp = None
+                user.otp_created_at = None
+                user.save()
+                messages.success(request, "Password reset successfully!")
+                return redirect('login_view')
+        except RegisterUser.DoesNotExist:
+            messages.error(request, "Something went wrong.")
+    return render(request, 'diary_app/verify_otp.html')
 
 
 @login_required
@@ -152,9 +255,12 @@ def edit_notebook(request, notebook_id):
 
 @login_required
 def delete_notebook(request, notebook_id):
-    notebook = Notebook.objects.get(id=notebook_id, user=request.user)
+    notebook = get_object_or_404(Notebook, id=notebook_id, user=request.user)
     notebook.delete()
     return redirect('my_notebooks')
+
+
+
 
 @login_required
 def add_expense(request):
@@ -166,7 +272,8 @@ def add_expense(request):
         category = Category.objects.get(id=category_id) if category_id else None
         
         Expense.objects.create(user=request.user, amount=amount, add_note=add_note, category=category)
-        return redirect('index')
+        messages.success(request, "Expense added successfully!")
+        return redirect('add_expense')
     
     return render(request, 'diary_app/add_expense.html', {'categories': categories})
 
@@ -238,5 +345,17 @@ def my_expenses_view(request):
         'from_date': from_date,
         'to_date': to_date
     })
+
+
+@login_required
+def read_notebook(request, id):
+    notebook = get_object_or_404(Notebook, id=id, user=request.user)
+    return render(request, 'diary_app/read_notebook.html', {'notebook': notebook})
+
+
+
+
+
+     
 
 

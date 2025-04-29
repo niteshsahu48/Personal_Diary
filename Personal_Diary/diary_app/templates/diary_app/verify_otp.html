@@ -1,0 +1,73 @@
+{% extends 'diary_app/base.html' %}
+
+{% block content %}
+
+<div class="card shadow p-4">
+
+    <h2 class="mb-4 text-center">Verify OTP</h2>
+     <!-- Error Message below OTP -->
+     
+    <form method="POST" onsubmit="showLoader(this)">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="otp" class="form-label">Enter OTP:</label>
+            <input type="text" name="otp" class="form-control {% if form.errors.otp %}is-invalid{% endif %}" id="otp" required>
+            
+           
+        </div>
+
+        <div class="mb-3">
+            <label for="new_password" class="form-label">New Password:</label>
+            <input type="password" name="new_password" class="form-control" id="new_password"
+                   pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}"
+                   title="Password must be at least 8 characters long and include uppercase, lowercase, number, and special character"
+                   required>
+            <small id="passwordHelp" class="text-muted">Password must have at least 8 characters, including uppercase, lowercase, a number, and a special character.</small>
+          </div>
+          
+          <div class="mb-3">
+            <label for="confirm_password" class="form-label">Confirm New Password:</label>
+            <input type="password" name="confirm_password" class="form-control" id="confirm_password"
+                   required oninput="this.setCustomValidity(this.value !== document.getElementById('new_password').value ? 'Passwords must match' : '')">
+            <small id="matchHelp" class="text-danger"></small>
+          </div>
+          
+        
+
+        <button type="submit" id="submit-btn" class="btn btn-success w-100">
+            Reset Password
+        </button>
+    </form>
+
+    <!-- OTP Expired Message (Hidden initially) -->
+    <div id="otp-expired-msg" class="text-center mt-3 text-danger fw-bold" style="display: none;">
+        ⛔ OTP has expired. Please request a new one.
+    </div>
+
+    <!-- Resend OTP Button (Hidden initially) -->
+    <div id="resend-otp-div" class="text-center mt-3" style="display: none;">
+        <a href="{% url 'forgot_password' %}" class="btn btn-warning w-100">
+            🔄 Resend OTP
+        </a>
+    </div>
+
+</div>
+
+<script>
+// After 5 minutes (300000 milliseconds), show expired message and resend button
+setTimeout(function() {
+    document.getElementById('otp-expired-msg').style.display = 'block';
+    document.getElementById('resend-otp-div').style.display = 'block';
+    document.querySelector('form').querySelectorAll('input, button').forEach(el => el.disabled = true);
+}, 300000);
+
+function showLoader(form) {
+    const btn = form.querySelector("#submit-btn");
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
+}
+
+
+</script>
+{% endblock %}

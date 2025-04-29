@@ -108,13 +108,20 @@
 
         <h2 class="text-center mb-4"><i class="fas fa-user-circle"></i> Welcome Back</h2>
 
-        {% if messages %}
+       <!-- Centered Toast Message -->
+        <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1100;">
             {% for message in messages %}
-                <div class="alert alert-danger text-center" role="alert">
-                    {{ message }}
+            <div class="toast align-items-center text-bg-primary border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="d-flex">
+                <div class="toast-body">
+                {{ message }}
                 </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            </div>
             {% endfor %}
-        {% endif %}
+        </div>
+        
 
         <form method="POST">
             {% csrf_token %}
@@ -130,6 +137,9 @@
                 <button type="submit" class="btn btn-primary"><i class="fas fa-sign-in-alt"></i> Login</button>
             </div>
         </form>
+        <div class="text-center mt-3 form-text">
+            <a href="{% url 'forgot_password' %}">Forgot Password?</a>
+        </div>
 
         <div class="text-center mt-3 form-text">
             Don’t have an account? <a href="{% url 'registration' %}">Register here</a>
@@ -148,5 +158,16 @@
             icon.classList.toggle('fa-sun');
         }
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+          const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+          toastElList.forEach(function (toastEl) {
+            const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+            toast.show();
+          });
+        });
+      </script>
+      
 </body>
 </html>

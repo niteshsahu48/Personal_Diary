@@ -119,6 +119,21 @@
         </ul>
       </div>
     {% endif %}
+    <!-- Toast Message Container -->
+
+    <div aria-live="polite" aria-atomic="true" class="position-fixed top-0 start-50 translate-middle-x p-3" style="z-index: 1100;">
+      {% for message in messages %}
+      <div class="toast align-items-center text-bg-primary border-0 show" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body">
+            {{ message }}
+          </div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
 
     <form method="post" action="{% url 'registration' %}">
       {% csrf_token %}
@@ -141,14 +156,21 @@
       <!-- Password -->
       <div class="mb-3">
         <label for="password" class="form-label">Password</label>
-        <input type="password" class="form-control" name="password" id="password" minlength="8" placeholder="Enter password" required>
+        <input type="password" class="form-control" name="password" id="password"
+              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}"
+              title="Password must be at least 8 characters long and include uppercase, lowercase, number, and special character"
+              placeholder="Enter password" required>
       </div>
 
       <!-- Confirm Password -->
       <div class="mb-3">
         <label for="confirm_password" class="form-label">Confirm Password</label>
-        <input type="password" class="form-control" name="confirm_password" id="confirm_password" minlength="8" placeholder="Re-enter password" required>
+        <input type="password" class="form-control" name="confirm_password" id="confirm_password"
+               pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!]).{8,}"
+               placeholder="Confirm your password" required>
       </div>
+      
+
 
       <!-- Submit Button -->
       <div class="d-grid">
@@ -182,6 +204,15 @@
         e.preventDefault();
         alert("Passwords do not match!");
       }
+    });
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const toastElList = [].slice.call(document.querySelectorAll('.toast'));
+      toastElList.forEach(function (toastEl) {
+        const toast = new bootstrap.Toast(toastEl, { delay: 3000 });
+        toast.show();
+      });
     });
   </script>
 </body>

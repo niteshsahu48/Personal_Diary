@@ -33,6 +33,8 @@ class RegisterUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    otp = models.CharField(max_length=6, blank=True, null=True)
+    otp_created_at = models.DateTimeField(blank=True, null=True)
 
     groups = models.ManyToManyField(Group, related_name='registeruser_set', blank=True)
 
@@ -58,6 +60,14 @@ class Notebook(models.Model):
     title = models.CharField(max_length=255)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
+    read = models.BooleanField(default=False)
+
+    def read(self):
+        self.read = True
+        self.save()
+
+    def __str__(self):
+        return self.title
 
 class Expense(models.Model):
     add_note = models.CharField(max_length=255, blank=True, null=True)

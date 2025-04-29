@@ -35,9 +35,10 @@ urlpatterns = [
     # Profile
     path('profile/', views.profile, name='profile'),
     path('profile/edit/', views.edit_profile_view, name='edit_profile'),
-    path('profile/change-password/', auth_views.PasswordChangeView.as_view(template_name='diary_app/change_password.html'), name='change_password'),
 
-
+    #forgot password
+    path('forgot-password/', views.forgot_password, name='forgot_password'),
+    path('verify-otp/', views.verify_otp, name='verify_otp'),
 
     
 
@@ -52,6 +53,8 @@ urlpatterns = [
     path('notebook/delete/<int:notebook_id>/', views.delete_notebook, name='delete_notebook'),
     #path('notebook/<int:notebook_id>/', views.notebook_detail, name='notebook_detail'),
     path('my-notebooks/',views.my_notebooks,name='my_notebooks'),
+    path('notebook/<int:id>/read/', views.read_notebook, name='read_notebook'),
+
 
     # Expense
     path('expense/add/', views.add_expense, name='add_expense'),
