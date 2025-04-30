@@ -19,11 +19,12 @@ from django.views.decorators.csrf import csrf_exempt
 
 User = get_user_model()
 
+@csrf_exempt
 def about_page(request):
     return render(request, 'diary_app/about.html')  
 
 
-
+@csrf_exempt
 def registration(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -67,16 +68,22 @@ def login_view(request):
         if user is None:
             messages.error(request, "Invalid email or password")
             return render(request, 'diary_app/login.html')
+
+        if not request.session.session_key:
+            request.session.create()
         
         login(request, user)
         return redirect('index')
     
     return render(request, 'diary_app/login.html')
 
+
+@csrf_exempt
 def logout_view(request):
     logout(request)
     return redirect('login_view')
 
+@csrf_exempt
 @login_required
 def index(request): 
     categories = Category.objects.filter(user=request.user)
@@ -90,11 +97,16 @@ def index(request):
     }
     return render(request, 'diary_app/index.html', context)
 
+
+@csrf_exempt
 @login_required
 def profile(request):
     user = request.user  
     return render(request, 'diary_app/profile.html')
 
+
+
+@csrf_exempt
 @login_required
 def edit_profile_view(request):
     user = request.user
@@ -112,11 +124,9 @@ def edit_profile_view(request):
 
     return render(request, 'diary_app/edit_profile.html', {'user': user})
 
-def generate_otp():
-    return str(random.randint(100000, 999999))
 
 
-
+@csrf_exempt
 def send_otp_email(user,otp):
     send_mail(
         subject='Your OTP for Password Reset',
@@ -131,28 +141,46 @@ def send_otp_email(user,otp):
         fail_silently=False,
     )
 
+
+def generate_otp():
+    return str(random.randint(100000, 999999))
+
+@csrf_exempt
 def forgot_password(request):
     if request.method == 'POST':
         email = request.POST.get('email')
         
         try:
             user = RegisterUser.objects.get(email=email)
-            otp = generate_otp()
+            otp = generate_otp()  
             user.otp = otp
             user.otp_created_at = timezone.now()
             user.save()
-            send_otp_email(user, otp)
+            send_otp_email(user, otp)  
             request.session['reset_email'] = email
             messages.success(request, "OTP sent to your email!")
             return redirect('verify_otp')
+
         except RegisterUser.DoesNotExist:
             messages.error(request, "User with this email does not exist.")
-    else:
-        messages.error(request, "Something Went worng! Please fill the corect email address.")
-
-
+    
     return render(request, 'diary_app/forgot_password.html')
 
+@csrf_exempt
+@login_required
+def forgot_password_auto(request):
+    user = request.user
+    otp = generate_otp()
+    user.otp = otp
+    user.otp_created_at = timezone.now()
+    user.save()
+    send_otp_email(user, otp)
+    request.session['reset_email'] = user.email
+    messages.success(request, "OTP sent to your email!")
+    return redirect('verify_otp')
+
+
+@csrf_exempt
 def verify_otp(request):
     email = request.session.get('reset_email')
     if not email:
@@ -177,6 +205,10 @@ def verify_otp(request):
                 messages.error(request, "Passwords do not match.")
             elif len(new_password) < 8 or not any(c.isdigit() for c in new_password) or not any(c.isupper() for c in new_password):
                 messages.error(request, "Password must be at least 8 characters, contain a number and an uppercase letter.")
+
+            elif check_password(new_password, user.password):
+                messages.error(request, "New password cannot be the same as the old password.")
+
             else:
                 user.set_password(new_password)
                 user.otp = None
@@ -188,7 +220,7 @@ def verify_otp(request):
             messages.error(request, "Something went wrong.")
     return render(request, 'diary_app/verify_otp.html')
 
-
+@csrf_exempt
 @login_required
 def add_category(request):
     if request.method == 'POST':
@@ -212,6 +244,9 @@ def add_category(request):
     categories = Category.objects.filter(user=request.user).order_by('category_name')
     return render(request, 'diary_app/add_category.html', {'categories': categories})
 
+
+
+@csrf_exempt
 @login_required
 def edit_category(request, category_id):
     category = get_object_or_404(Category, id=category_id, user=request.user)
@@ -226,6 +261,7 @@ def edit_category(request, category_id):
     return render(request, 'diary_app/edit_category.html', {'category': category})
 
 
+@csrf_exempt
 @login_required
 def delete_category(request, category_id):
     category = get_object_or_404(Category, id=category_id, user=request.user)
@@ -236,7 +272,7 @@ def delete_category(request, category_id):
 
     return render(request, 'diary_app/delete_category.html', {'category': category})
 
-
+@csrf_exempt
 @login_required
 def add_notebook(request):
     if request.method == 'POST':
@@ -246,6 +282,7 @@ def add_notebook(request):
         return redirect('index')
     return render(request, 'diary_app/add_notebook.html')
 
+@csrf_exempt
 @login_required
 def edit_notebook(request, notebook_id):
     notebook = Notebook.objects.get(id=notebook_id, user=request.user)
@@ -256,6 +293,8 @@ def edit_notebook(request, notebook_id):
         return redirect('index')
     return render(request, 'diary_app/edit_notebook.html', {'notebook': notebook})
 
+
+@csrf_exempt
 @login_required
 def delete_notebook(request, notebook_id):
     notebook = get_object_or_404(Notebook, id=notebook_id, user=request.user)
@@ -264,7 +303,7 @@ def delete_notebook(request, notebook_id):
 
 
 
-
+@csrf_exempt
 @login_required
 def add_expense(request):
     categories = Category.objects.filter(user=request.user)
@@ -280,6 +319,8 @@ def add_expense(request):
     
     return render(request, 'diary_app/add_expense.html', {'categories': categories})
 
+
+@csrf_exempt
 @login_required
 def edit_expense(request, expense_id):
     expense = Expense.objects.get(id=expense_id, user=request.user)
@@ -295,6 +336,8 @@ def edit_expense(request, expense_id):
     
     return render(request, 'diary_app/edit_expense.html', {'expense': expense, 'categories': categories})
 
+
+@csrf_exempt
 @login_required
 def delete_expense_view(request, expense_id):
     expense = get_object_or_404(Expense, id=expense_id, user=request.user)
@@ -305,6 +348,9 @@ def delete_expense_view(request, expense_id):
 
     return render(request, 'diary_app/confirm_delete.html', {'expense': expense})
 
+
+
+@csrf_exempt
 @login_required
 def expenses_by_category(request, category_id):
     category = Category.objects.get(id=category_id, user=request.user)
@@ -314,12 +360,16 @@ def expenses_by_category(request, category_id):
         'category': category,
     })
 
+
+@csrf_exempt
 @login_required
 def my_notebooks(request):
     notebooks = Notebook.objects.filter(user=request.user).order_by('-created_at')
     return render(request, 'diary_app/my_notebooks.html', {'notebooks': notebooks})
 
 
+
+@csrf_exempt
 @login_required
 def my_expenses_view(request):
     categories = Category.objects.filter(user=request.user)
@@ -350,10 +400,20 @@ def my_expenses_view(request):
     })
 
 
+@csrf_exempt
 @login_required
 def read_notebook(request, id):
     notebook = get_object_or_404(Notebook, id=id, user=request.user)
     return render(request, 'diary_app/read_notebook.html', {'notebook': notebook})
+
+
+
+
+@csrf_exempt
+def some_view(request):
+    prev_url = request.META.get('HTTP_REFERER', '/')
+    return render(request, 'diary_app/index.html', {'prev_url': prev_url})
+
 
 
 

@@ -39,6 +39,8 @@ urlpatterns = [
     #forgot password
     path('forgot-password/', views.forgot_password, name='forgot_password'),
     path('verify-otp/', views.verify_otp, name='verify_otp'),
+    path('forgot-password-auto/', views.forgot_password_auto, name='forgot_password_auto'),
+
 
     
 
@@ -63,7 +65,8 @@ urlpatterns = [
     path('expense/delete/<int:expense_id>/', views.delete_expense_view, name='delete_expense'),
     path('expense/category/<int:category_id>/', views.expenses_by_category, name='expenses_by_category'),
 
-    
+    #back
+    path('some-page/', views.some_view, name='some_page'),  
 
 ]
 

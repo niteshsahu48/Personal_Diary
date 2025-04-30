@@ -164,9 +164,11 @@
     <div class="container-fluid">
 
         <!-- Back Button Start -->
-        <button class="btn btn-outline-light ms-3" onclick="history.back()">
-            <i class="fas fa-arrow-left"></i> Back
-        </button>
+        <a href="{% url 'some_page' %}" class="btn btn-outline-light">
+          <i class="fas fa-arrow-left"></i> Back
+        </a>
+      
+        
       <!-- Back Button End -->
         <a class="navbar-brand" href="{% url 'index' %}">📓 My Personal Diary</a>
         

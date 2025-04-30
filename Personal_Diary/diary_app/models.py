@@ -37,6 +37,7 @@ class RegisterUser(AbstractBaseUser, PermissionsMixin):
     otp_created_at = models.DateTimeField(blank=True, null=True)
 
     groups = models.ManyToManyField(Group, related_name='registeruser_set', blank=True)
+    session_key = models.CharField(max_length=40, null=True, blank=True)
 
     objects = RegisterUserManager()
 
